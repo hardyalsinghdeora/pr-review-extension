@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+body {
+  width: 780px;
+  margin: 0;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+body.as-tab {
+  width: auto;
+}
+
+/* Keep react-diff-view readable inside the narrow popup. */
+.diff {
+  font-size: 11px;
+}
+.diff-gutter {
+  min-width: 2.5em;
+}
