@@ -2,6 +2,11 @@ import type { CachedPr, Settings } from '../types'
 
 const BASE = 'https://api.bitbucket.org/2.0'
 
+/** `workspace/repo` path segments, each URL-encoded (values come from user settings). */
+function repoPath(workspace: string, repo: string): string {
+  return `${encodeURIComponent(workspace)}/${encodeURIComponent(repo)}`
+}
+
 export class BitbucketError extends Error {
   constructor(
     public status: number,
@@ -69,7 +74,7 @@ export class Bitbucket {
   /** Repo slugs the user is a member of, for the settings picker. */
   async workspaceRepos(workspace: string): Promise<string[]> {
     const repos = await this.paged<{ slug: string }>(
-      `${BASE}/repositories/${workspace}?role=member&pagelen=100`,
+      `${BASE}/repositories/${encodeURIComponent(workspace)}?role=member&pagelen=100`,
     )
     return repos.map((r) => r.slug).sort()
   }
@@ -78,7 +83,7 @@ export class Bitbucket {
   async pendingPrs(workspace: string, repo: string, uuid: string): Promise<CachedPr[]> {
     const q = encodeURIComponent(`state="OPEN" AND reviewers.uuid="${uuid}"`)
     const fields = encodeURIComponent('+values.participants')
-    const url = `${BASE}/repositories/${workspace}/${repo}/pullrequests?q=${q}&fields=${fields}&pagelen=50`
+    const url = `${BASE}/repositories/${repoPath(workspace, repo)}/pullrequests?q=${q}&fields=${fields}&pagelen=50`
     const raw = await this.paged<RawPr>(url)
     return raw.map((pr) => ({
       workspace,
@@ -86,7 +91,7 @@ export class Bitbucket {
       id: pr.id,
       title: pr.title,
       author: pr.author?.display_name ?? 'unknown',
-      link: pr.links?.html?.href ?? `https://bitbucket.org/${workspace}/${repo}/pull-requests/${pr.id}`,
+      link: pr.links?.html?.href ?? `https://bitbucket.org/${repoPath(workspace, repo)}/pull-requests/${pr.id}`,
       createdOn: pr.created_on,
       updatedOn: pr.updated_on,
       commentCount: pr.comment_count ?? 0,
@@ -98,7 +103,7 @@ export class Bitbucket {
 
   /** Raw unified diff for a PR (Bitbucket 302-redirects to the diff blob). */
   async diff(workspace: string, repo: string, id: number): Promise<string> {
-    const res = await fetch(`${BASE}/repositories/${workspace}/${repo}/pullrequests/${id}/diff`, {
+    const res = await fetch(`${BASE}/repositories/${repoPath(workspace, repo)}/pullrequests/${id}/diff`, {
       headers: this.headers(),
     })
     if (!res.ok) throw new BitbucketError(res.status, `Bitbucket ${res.status} fetching diff`)
@@ -114,7 +119,7 @@ export class Bitbucket {
     inline?: { path: string; to: number },
   ): Promise<void> {
     const res = await fetch(
-      `${BASE}/repositories/${workspace}/${repo}/pullrequests/${id}/comments`,
+      `${BASE}/repositories/${repoPath(workspace, repo)}/pullrequests/${id}/comments`,
       {
         method: 'POST',
         headers: this.headers({ 'Content-Type': 'application/json' }),
