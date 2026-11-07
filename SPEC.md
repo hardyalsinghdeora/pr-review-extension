@@ -271,9 +271,12 @@ const client = new Anthropic({
 - Model: `claude-opus-4-8` (default; a settings dropdown may offer
   `claude-sonnet-5` for cheaper runs and `claude-haiku-4-5` for
   summaries-only).
-- Thinking: `thinking: { type: "adaptive" }`.
+- Thinking: `thinking: { type: "adaptive" }` on models that support it
+  (Opus 4.8, Sonnet 5); omitted for `claude-haiku-4-5`, which does not
+  accept adaptive thinking.
 - Streaming (`client.messages.stream`) for the summary view so the popup
-  renders progressively; `max_tokens: 64000` on streamed full reviews.
+  renders progressively; `max_tokens: 16000` on both the streamed summary
+  and the structured review (`messages.parse`).
 
 ### Diff preparation (`lib/diff.ts`) — required before any AI call
 

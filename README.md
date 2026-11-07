@@ -1,7 +1,7 @@
 # Bitbucket PR Review (AI) — Chrome Extension
 
 Pending Bitbucket pull requests assigned to you, with AI-assisted reviews.
-Spec: `~/Desktop/PR-Review-Chrome-Extension.md`.
+Spec: [`SPEC.md`](SPEC.md).
 
 ## Build & load
 

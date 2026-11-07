@@ -1,6 +1,6 @@
 # Privacy Policy — PR Review AI for Bitbucket
 
-_Last updated: 2026-07-15_
+_Last updated: 2026-11-07_
 
 ## The short version
 
@@ -31,13 +31,23 @@ The extension makes network requests only to:
 1. **api.bitbucket.org** — to list your pull requests, fetch diffs, and
    (only when you click a post button) create comments, authenticated with
    the API token you provide.
-2. **Your chosen AI provider** — when you explicitly run an AI summary or
-   review (or enable scheduled auto-review), the pull-request diff, title,
-   and author are sent to exactly one of:
+2. **Your chosen AI provider** — only when you explicitly run an AI summary
+   or review (or enable scheduled auto-review). Each request contains:
+   - the pull-request diff (after noise files such as lockfiles and
+     generated code are dropped, and trimmed to a size budget),
+   - the PR title, author display name, workspace, repository slug, PR id
+     and created date,
+   - the names of any files omitted from the diff,
+   - the review instructions (system prompt) built into the extension.
+
+   It is sent to exactly one of:
    - api.anthropic.com (your Anthropic key), or
-   - generativelanguage.googleapis.com (your Google key), or
+   - generativelanguage.googleapis.com (your Google key; the Settings
+     "Load" button also calls Google's model-list endpoint with that key), or
    - your own Ollama server (typically localhost — data stays on your
      machine).
+
+   Your Bitbucket credentials are never sent to the AI provider.
 
 No other destinations exist. There is no telemetry, no crash reporting, no
 ad or tracking network.
@@ -51,9 +61,10 @@ employer's policy forbids sending code to cloud AI services, use the Ollama
 
 ## Payments
 
-Pro subscriptions are processed by ExtensionPay/Stripe. We receive no card
-details; ExtensionPay's privacy policy governs payment data.
+Payments are not implemented. The extension does not contact any payment
+provider and collects no payment information. If paid plans are added
+later, this policy will be updated before they ship.
 
 ## Contact
 
-Questions: <YOUR-CONTACT-EMAIL>
+Questions: hardyalsinghdeora@gmail.com
