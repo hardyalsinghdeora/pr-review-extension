@@ -51,7 +51,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Messages from the popup — sync logic lives in one place (here).
 // ---------------------------------------------------------------------------
 
-chrome.runtime.onMessage.addListener((msg: { type?: string }, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((msg: { type?: string }, sender, sendResponse) => {
+  // Only accept messages from this extension's own pages (e.g. the popup).
+  if (sender.id !== chrome.runtime.id) return undefined
   if (msg?.type === 'sync') {
     sync({ notify: false })
       .then(sendResponse)
